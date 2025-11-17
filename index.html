@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工程计算器</title>
+    <title>工程计算器 - 四程序统一计算</title>
     <style>
         * {
             box-sizing: border-box;
@@ -46,37 +46,19 @@
             margin-bottom: 20px;
         }
         
-        .calculator-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .calculator {
+        .input-section {
             background: white;
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            margin-bottom: 25px;
         }
         
-        .calculator:hover {
-            transform: translateY(-5px);
-        }
-        
-        h2 {
-            color: #2c3e50;
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3498db;
-            display: flex;
-            align-items: center;
-        }
-        
-        h2 i {
-            margin-right: 10px;
-            color: #3498db;
         }
         
         .input-group {
@@ -124,39 +106,89 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .result {
-            background: linear-gradient(135deg, #e8f4fc, #bbdefb);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 25px;
-            border-left: 5px solid #2196f3;
+        .results-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
         
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 12px;
+        .result-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
         }
         
-        .result-label {
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .result-card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-card h2 i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .program-code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        
+        .result-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .comparison-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .comparison-table th {
+            background-color: #f8f9fa;
             font-weight: bold;
             color: #2c3e50;
         }
         
-        .result-value {
-            font-weight: bold;
-            color: #e74c3c;
-            font-size: 1.1em;
-        }
-        
-        @media (max-width: 768px) {
-            .calculator-container {
-                grid-template-columns: 1fr;
-            }
+        .comparison-table tr:hover {
+            background-color: #f1f8ff;
         }
         
         .instructions {
@@ -167,370 +199,304 @@
             border-left: 4px solid #f39c12;
         }
         
-        .program-code {
-            background: #2c3e50;
-            color: #ecf0f1;
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .highlight {
+            background-color: #e8f4fc;
             padding: 15px;
             border-radius: 8px;
-            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .method-explanation {
             margin-top: 15px;
             font-size: 0.9em;
-            line-height: 1.5;
-            overflow-x: auto;
-        }
-        
-        .history {
-            margin-top: 20px;
-            max-height: 150px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            background: #f9f9f9;
-        }
-        
-        .history-item {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9em;
-        }
-        
-        .history-item:last-child {
-            border-bottom: none;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>工程计算器</h1>
-            <p class="subtitle">基于计算器程序的网页实现</p>
+            <h1>工程计算器 - 四程序统一计算</h1>
+            <p class="subtitle">四个程序计算同一结果，比较不同计算方法</p>
         </header>
         
         <div class="instructions">
             <h3>使用说明</h3>
-            <p>选择不同的计算程序，输入相应参数，点击计算按钮获取结果。每个程序都有对应的原始代码显示。</p>
+            <p>输入参数后，系统将使用四种不同的方法计算相同的结果，并显示每种方法的计算过程和结果。</p>
+            <p>所有程序都基于圆弧几何计算，用于确定圆弧上特定点的坐标或高度。</p>
         </div>
         
-        <div class="calculator-container">
+        <div class="input-section">
+            <h2>输入参数</h2>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="radius">圆弧半径 (A):</label>
+                    <input type="number" id="radius" value="100" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="chordLength">弦长 (D):</label>
+                    <input type="number" id="chordLength" value="120" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="distanceX">距离 X:</label>
+                    <input type="number" id="distanceX" value="30" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="baseX">基准点 X 坐标:</label>
+                    <input type="number" id="baseX" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="baseY">基准点 Y 坐标:</label>
+                    <input type="number" id="baseY" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="angle">角度 (度):</label>
+                    <input type="number" id="angle" value="45" step="0.001">
+                </div>
+            </div>
+            
+            <button id="calculateAll">计算所有方法</button>
+        </div>
+        
+        <div class="results-section">
             <!-- 程序1：坐标计算 -->
-            <div class="calculator">
+            <div class="result-card">
                 <h2><i>📍</i> 程序1：坐标计算</h2>
                 
                 <div class="program-code">
                     Prog 1 : ? → A : ? → C : Lbl 1 : ? → B : ? → D : Rec (D, B) + A → X : Rec (D, B) + C → Y : Goto 1
                 </div>
                 
-                <div class="input-group">
-                    <label for="a1">基准点 X 坐标 (A):</label>
-                    <input type="number" id="a1" value="0" step="0.001">
+                <div class="result-value" id="result1">-</div>
+                
+                <div class="method-explanation">
+                    <p>此方法通过极坐标转换计算圆弧上特定点的直角坐标。</p>
+                    <p>输入：基准点坐标(A,C)、角度(B)、距离(D)</p>
+                    <p>输出：目标点坐标(X,Y)</p>
                 </div>
                 
-                <div class="input-group">
-                    <label for="c1">基准点 Y 坐标 (C):</label>
-                    <input type="number" id="c1" value="0" step="0.001">
-                </div>
-                
-                <div class="input-group">
-                    <label for="b1">角度 B (度):</label>
-                    <input type="number" id="b1" value="0" step="0.001">
-                </div>
-                
-                <div class="input-group">
-                    <label for="d1">距离 D:</label>
-                    <input type="number" id="d1" value="0" step="0.001">
-                </div>
-                
-                <button id="calculate1">计算坐标</button>
-                
-                <div class="result">
-                    <h3>计算结果</h3>
-                    <div class="result-item">
-                        <span class="result-label">X 坐标:</span>
-                        <span id="resultX1" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">Y 坐标:</span>
-                        <span id="resultY1" class="result-value">-</span>
-                    </div>
-                </div>
-                
-                <div class="history" id="history1">
-                    <div class="history-item">历史记录将显示在这里</div>
+                <div class="highlight">
+                    <p><strong>计算细节：</strong></p>
+                    <p id="calcDetails1">-</p>
                 </div>
             </div>
             
             <!-- 程序2：直尺计算 -->
-            <div class="calculator">
+            <div class="result-card">
                 <h2><i>📏</i> 程序2：直尺计算</h2>
                 
                 <div class="program-code">
                     Prog 2 : ? → A : ? → C : Lbl 1 : ? → Y : ? → X : Pol( C-A-Y , (C-X) ) → D : Y + 180 → B : Goto 1
                 </div>
                 
-                <div class="input-group">
-                    <label for="a2">参数 A:</label>
-                    <input type="number" id="a2" value="0" step="0.001">
+                <div class="result-value" id="result2">-</div>
+                
+                <div class="method-explanation">
+                    <p>此方法计算两点之间的距离和角度，用于确定圆弧上的位置关系。</p>
+                    <p>输入：参数A,C,Y,X</p>
+                    <p>输出：距离D和角度B</p>
                 </div>
                 
-                <div class="input-group">
-                    <label for="c2">参数 C:</label>
-                    <input type="number" id="c2" value="0" step="0.001">
-                </div>
-                
-                <div class="input-group">
-                    <label for="y2">参数 Y:</label>
-                    <input type="number" id="y2" value="0" step="0.001">
-                </div>
-                
-                <div class="input-group">
-                    <label for="x2">参数 X:</label>
-                    <input type="number" id="x2" value="0" step="0.001">
-                </div>
-                
-                <button id="calculate2">直尺计算</button>
-                
-                <div class="result">
-                    <h3>计算结果</h3>
-                    <div class="result-item">
-                        <span class="result-label">距离 D:</span>
-                        <span id="resultD2" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">角度 B:</span>
-                        <span id="resultB2" class="result-value">-</span>
-                    </div>
-                </div>
-                
-                <div class="history" id="history2">
-                    <div class="history-item">历史记录将显示在这里</div>
+                <div class="highlight">
+                    <p><strong>计算细节：</strong></p>
+                    <p id="calcDetails2">-</p>
                 </div>
             </div>
             
             <!-- 程序3：中拱计算 -->
-            <div class="calculator">
+            <div class="result-card">
                 <h2><i>🏗️</i> 程序3：中拱计算</h2>
                 
                 <div class="program-code">
                     Prog 3 : ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - X²) - C → Y : Goto 1
                 </div>
                 
-                <div class="input-group">
-                    <label for="a3">半径 A:</label>
-                    <input type="number" id="a3" value="0" step="0.001">
+                <div class="result-value" id="result3">-</div>
+                
+                <div class="method-explanation">
+                    <p>此方法计算圆弧的中拱高度，即从弦中点到圆弧的垂直距离。</p>
+                    <p>输入：半径A、弦长D、距离X</p>
+                    <p>输出：拱高Y</p>
                 </div>
                 
-                <div class="input-group">
-                    <label for="d3">弦长 D:</label>
-                    <input type="number" id="d3" value="0" step="0.001">
-                </div>
-                
-                <div class="input-group">
-                    <label for="x3">距离 X:</label>
-                    <input type="number" id="x3" value="0" step="0.001">
-                </div>
-                
-                <button id="calculate3">中拱计算</button>
-                
-                <div class="result">
-                    <h3>计算结果</h3>
-                    <div class="result-item">
-                        <span class="result-label">半弦长 B:</span>
-                        <span id="resultB3" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">圆心到弦距离 C:</span>
-                        <span id="resultC3" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">拱高 H:</span>
-                        <span id="resultH3" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">高度 Y:</span>
-                        <span id="resultY3" class="result-value">-</span>
-                    </div>
-                </div>
-                
-                <div class="history" id="history3">
-                    <div class="history-item">历史记录将显示在这里</div>
+                <div class="highlight">
+                    <p><strong>计算细节：</strong></p>
+                    <p id="calcDetails3">-</p>
                 </div>
             </div>
             
             <!-- 程序4：短拱计算 -->
-            <div class="calculator">
+            <div class="result-card">
                 <h2><i>🏛️</i> 程序4：短拱计算</h2>
                 
                 <div class="program-code">
                     Prog 4 : ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - (B - X)²) → Y : Y - C → H2 : Goto 1
                 </div>
                 
-                <div class="input-group">
-                    <label for="a4">半径 A:</label>
-                    <input type="number" id="a4" value="0" step="0.001">
+                <div class="result-value" id="result4">-</div>
+                
+                <div class="method-explanation">
+                    <p>此方法计算圆弧的短拱高度，即从弦上某点到圆弧的垂直距离。</p>
+                    <p>输入：半径A、弦长D、距离X</p>
+                    <p>输出：短拱高H2</p>
                 </div>
                 
-                <div class="input-group">
-                    <label for="d4">弦长 D:</label>
-                    <input type="number" id="d4" value="0" step="0.001">
+                <div class="highlight">
+                    <p><strong>计算细节：</strong></p>
+                    <p id="calcDetails4">-</p>
                 </div>
-                
-                <div class="input-group">
-                    <label for="x4">距离 X:</label>
-                    <input type="number" id="x4" value="0" step="0.001">
-                </div>
-                
-                <button id="calculate4">短拱计算</button>
-                
-                <div class="result">
-                    <h3>计算结果</h3>
-                    <div class="result-item">
-                        <span class="result-label">半弦长 B:</span>
-                        <span id="resultB4" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">圆心到弦距离 C:</span>
-                        <span id="resultC4" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">拱高 H:</span>
-                        <span id="resultH4" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">高度 Y:</span>
-                        <span id="resultY4" class="result-value">-</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">短拱高 H2:</span>
-                        <span id="resultH24" class="result-value">-</span>
-                    </div>
-                </div>
-                
-                <div class="history" id="history4">
-                    <div class="history-item">历史记录将显示在这里</div>
-                </div>
+            </div>
+        </div>
+        
+        <div class="comparison-section">
+            <h2>计算结果比较</h2>
+            <p>所有四种方法都计算圆弧上特定点的高度或坐标，下面是各方法计算结果的比较：</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>计算方法</th>
+                        <th>计算结果</th>
+                        <th>计算过程</th>
+                        <th>适用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>坐标计算法</td>
+                        <td id="compareResult1">-</td>
+                        <td id="compareProcess1">-</td>
+                        <td>已知基准点和极坐标参数</td>
+                    </tr>
+                    <tr>
+                        <td>直尺计算法</td>
+                        <td id="compareResult2">-</td>
+                        <td id="compareProcess2">-</td>
+                        <td>已知两点坐标求距离和角度</td>
+                    </tr>
+                    <tr>
+                        <td>中拱计算法</td>
+                        <td id="compareResult3">-</td>
+                        <td id="compareProcess3">-</td>
+                        <td>计算弦中点到圆弧的垂直距离</td>
+                    </tr>
+                    <tr>
+                        <td>短拱计算法</td>
+                        <td id="compareResult4">-</td>
+                        <td id="compareProcess4">-</td>
+                        <td>计算弦上任意点到圆弧的垂直距离</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="highlight">
+                <p><strong>结论：</strong></p>
+                <p id="conclusion">-</p>
             </div>
         </div>
     </div>
 
     <script>
-        // 程序1：坐标计算
-        document.getElementById('calculate1').addEventListener('click', function() {
-            const A = parseFloat(document.getElementById('a1').value) || 0;
-            const C = parseFloat(document.getElementById('c1').value) || 0;
-            const B = parseFloat(document.getElementById('b1').value) || 0;
-            const D = parseFloat(document.getElementById('d1').value) || 0;
-            
-            // 将角度转换为弧度
-            const rad = B * Math.PI / 180;
-            
-            // 计算坐标
-            const X = D * Math.cos(rad) + A;
-            const Y = D * Math.sin(rad) + C;
-            
-            // 显示结果
-            document.getElementById('resultX1').textContent = X.toFixed(3);
-            document.getElementById('resultY1').textContent = Y.toFixed(3);
-            
-            // 添加到历史记录
-            addHistory('history1', A=${A}, C=${C}, B=${B}°, D=${D} → X=${X.toFixed(3)}, Y=${Y.toFixed(3)});
-        });
-        
-        // 程序2：直尺计算
-        document.getElementById('calculate2').addEventListener('click', function() {
-            const A = parseFloat(document.getElementById('a2').value) || 0;
-            const C = parseFloat(document.getElementById('c2').value) || 0;
-            const Y = parseFloat(document.getElementById('y2').value) || 0;
-            const X = parseFloat(document.getElementById('x2').value) || 0;
-            
-            // 计算距离和角度
-            const dx = C - A - Y;
-            const dy = C - X;
-            const D = Math.sqrt(dx*dx + dy*dy);
-            let B = Math.atan2(dy, dx) * 180 / Math.PI;
-            
-            // 角度调整
-            B = Y + 180;
-            
-            // 显示结果
-            document.getElementById('resultD2').textContent = D.toFixed(3);
-            document.getElementById('resultB2').textContent = B.toFixed(3) + '°';
-            
-            // 添加到历史记录
-            addHistory('history2', A=${A}, C=${C}, Y=${Y}, X=${X} → D=${D.toFixed(3)}, B=${B.toFixed(3)}°);
-        });
-        
-        // 程序3：中拱计算
-        document.getElementById('calculate3').addEventListener('click', function() {
-            const A = parseFloat(document.getElementById('a3').value) || 0;
-            const D = parseFloat(document.getElementById('d3').value) || 0;
-            const X = parseFloat(document.getElementById('x3').value) || 0;
+        document.getElementById('calculateAll').addEventListener('click', function() {
+            // 获取输入值
+            const A = parseFloat(document.getElementById('radius').value) || 0;
+            const D = parseFloat(document.getElementById('chordLength').value) || 0;
+            const X = parseFloat(document.getElementById('distanceX').value) || 0;
+            const baseX = parseFloat(document.getElementById('baseX').value) || 0;
+            const baseY = parseFloat(document.getElementById('baseY').value) || 0;
+            const angle = parseFloat(document.getElementById('angle').value) || 0;
             
             // 计算中间值
             const B = D / 2;
             const C = Math.sqrt(A*A - B*B);
             const H = A - C;
-            const Y = Math.sqrt(A*A - X*X) - C;
             
-            // 显示结果
-            document.getElementById('resultB3').textContent = B.toFixed(3);
-            document.getElementById('resultC3').textContent = C.toFixed(3);
-            document.getElementById('resultH3').textContent = H.toFixed(3);
-            document.getElementById('resultY3').textContent = Y.toFixed(3);
+            // 程序1：坐标计算
+            const rad = angle * Math.PI / 180;
+            const X1 = D * Math.cos(rad) + baseX;
+            const Y1 = D * Math.sin(rad) + baseY;
             
-            // 添加到历史记录
-            addHistory('history3', A=${A}, D=${D}, X=${X} → B=${B.toFixed(3)}, C=${C.toFixed(3)}, H=${H.toFixed(3)}, Y=${Y.toFixed(3)});
+            document.getElementById('result1').textContent = 坐标: (${X1.toFixed(3)}, ${Y1.toFixed(3)});
+            document.getElementById('calcDetails1').innerHTML = 
+                基准点: (${baseX}, ${baseY})<br> +
+                角度: ${angle}°<br> +
+                距离: ${D}<br> +
+                X = ${D} × cos(${angle}°) + ${baseX} = ${X1.toFixed(3)}<br> +
+                Y = ${D} × sin(${angle}°) + ${baseY} = ${Y1.toFixed(3)};
+            
+            // 程序2：直尺计算
+            const dx = C - A - Y1;
+            const dy = C - X1;
+            const D2 = Math.sqrt(dx*dx + dy*dy);
+            const B2 = angle + 180;
+            
+            document.getElementById('result2').textContent = 距离: ${D2.toFixed(3)}, 角度: ${B2.toFixed(3)}°;
+            document.getElementById('calcDetails2').innerHTML = 
+                dx = ${C.toFixed(3)} - ${A} - ${Y1.toFixed(3)} = ${dx.toFixed(3)}<br> +
+                dy = ${C.toFixed(3)} - ${X1.toFixed(3)} = ${dy.toFixed(3)}<br> +
+                距离 D = √(${dx.toFixed(3)}² + ${dy.toFixed(3)}²) = ${D2.toFixed(3)}<br> +
+                角度 B = ${angle} + 180 = ${B2.toFixed(3)}°;
+            
+            // 程序3：中拱计算
+            const Y3 = Math.sqrt(A*A - X*X) - C;
+            
+            document.getElementById('result3').textContent = 拱高: ${Y3.toFixed(3)};
+            document.getElementById('calcDetails3').innerHTML = 
+                半径 A = ${A}<br> +
+                半弦长 B = ${D} ÷ 2 = ${B.toFixed(3)}<br> +
+                圆心到弦距离 C = √(${A}² - ${B.toFixed(3)}²) = ${C.toFixed(3)}<br> +
+                距离 X = ${X}<br> +
+                拱高 Y = √(${A}² - ${X}²) - ${C.toFixed(3)} = ${Y3.toFixed(3)};
+            
+            // 程序4：短拱计算
+            const Y4 = Math.sqrt(A*A - Math.pow(B - X, 2));
+            const H2 = Y4 - C;
+            
+            document.getElementById('result4').textContent = 短拱高: ${H2.toFixed(3)};
+            document.getElementById('calcDetails4').innerHTML = 
+                半径 A = ${A}<br> +
+                半弦长 B = ${D} ÷ 2 = ${B.toFixed(3)}<br> +
+                圆心到弦距离 C = √(${A}² - ${B.toFixed(3)}²) = ${C.toFixed(3)}<br> +
+                距离 X = ${X}<br> +
+                Y = √(${A}² - (${B.toFixed(3)} - ${X})²) = ${Y4.toFixed(3)}<br> +
+                短拱高 H2 = ${Y4.toFixed(3)} - ${C.toFixed(3)} = ${H2.toFixed(3)};
+            
+            // 更新比较表格
+            document.getElementById('compareResult1').textContent = (${X1.toFixed(3)}, ${Y1.toFixed(3)});
+            document.getElementById('compareResult2').textContent = D=${D2.toFixed(3)}, B=${B2.toFixed(3)}°;
+            document.getElementById('compareResult3').textContent = Y3.toFixed(3);
+            document.getElementById('compareResult4').textContent = H2.toFixed(3);
+            
+            document.getElementById('compareProcess1').textContent = "极坐标转直角坐标";
+            document.getElementById('compareProcess2').textContent = "两点距离和角度计算";
+            document.getElementById('compareProcess3').textContent = "弦中点到圆弧的垂直距离";
+            document.getElementById('compareProcess4').textContent = "弦上任意点到圆弧的垂直距离";
+            
+            // 结论
+            document.getElementById('conclusion').innerHTML = 
+                所有四种方法都基于圆弧几何计算，但采用不同的输入参数和计算路径。<br> +
+                在这个例子中，我们使用半径 A=${A}，弦长 D=${D}，距离 X=${X} 进行计算。<br> +
+                虽然方法不同，但最终都提供了关于圆弧上特定点位置的信息。;
         });
-        
-        // 程序4：短拱计算
-        document.getElementById('calculate4').addEventListener('click', function() {
-            const A = parseFloat(document.getElementById('a4').value) || 0;
-            const D = parseFloat(document.getElementById('d4').value) || 0;
-            const X = parseFloat(document.getElementById('x4').value) || 0;
-            
-            // 计算中间值
-            const B = D / 2;
-            const C = Math.sqrt(A*A - B*B);
-            const H = A - C;
-            const Y = Math.sqrt(A*A - Math.pow(B - X, 2));
-            const H2 = Y - C;
-            
-            // 显示结果
-            document.getElementById('resultB4').textContent = B.toFixed(3);
-            document.getElementById('resultC4').textContent = C.toFixed(3);
-            document.getElementById('resultH4').textContent = H.toFixed(3);
-            document.getElementById('resultY4').textContent = Y.toFixed(3);
-            document.getElementById('resultH24').textContent = H2.toFixed(3);
-            
-            // 添加到历史记录
-            addHistory('history4', A=${A}, D=${D}, X=${X} → B=${B.toFixed(3)}, C=${C.toFixed(3)}, H=${H.toFixed(3)}, Y=${Y.toFixed(3)}, H2=${H2.toFixed(3)});
-        });
-        
-        // 添加历史记录函数
-        function addHistory(historyId, text) {
-            const historyElement = document.getElementById(historyId);
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.textContent = text;
-            
-            // 如果第一条是默认文本，则替换它
-            if (historyElement.firstChild.textContent === '历史记录将显示在这里') {
-                historyElement.innerHTML = '';
-            }
-            
-            historyElement.insertBefore(historyItem, historyElement.firstChild);
-            
-            // 限制历史记录数量
-            if (historyElement.children.length > 5) {
-                historyElement.removeChild(historyElement.lastChild);
-            }
-        }
         
         // 初始计算
-        document.getElementById('calculate1').click();
-        document.getElementById('calculate2').click();
-        document.getElementById('calculate3').click();
-        document.getElementById('calculate4').click();
+        document.getElementById('calculateAll').click();
     </script>
 </body>
 </html>
