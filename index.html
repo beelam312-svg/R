@@ -21,7 +21,7 @@
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -29,27 +29,26 @@
             text-align: center;
             margin-bottom: 30px;
             background: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         h1 {
             color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-size: 2em;
         }
         
         .subtitle {
             color: #7f8c8d;
             font-size: 1.1em;
-            margin-bottom: 20px;
         }
         
         .calculator {
             background: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin-bottom: 30px;
         }
@@ -72,7 +71,7 @@
             color: #2c3e50;
         }
         
-        input, select {
+        input {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -81,7 +80,7 @@
             transition: all 0.3s;
         }
         
-        input:focus, select:focus {
+        input:focus {
             outline: none;
             border-color: #3498db;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
@@ -196,13 +195,13 @@
     <div class="container">
         <header>
             <h1>圆弧几何计算器</h1>
-            <p class="subtitle">统一计算圆弧相关参数</p>
+            <p class="subtitle">圆弧拱高计算工具</p>
         </header>
         
         <div class="instructions">
             <h3>使用说明</h3>
-            <p>输入圆弧的基本参数，系统将计算圆弧上特定点的坐标或高度。</p>
-            <p>所有四种方法都基于相同的几何原理，只是输入参数和计算路径不同。</p>
+            <p>输入圆弧的基本参数，系统将计算圆弧上特定点的拱高。</p>
+            <p>所有计算都基于圆弧几何原理，提供准确的结果。</p>
         </div>
         
         <div class="calculator">
@@ -223,35 +222,9 @@
                     <label for="distanceX">距离 X:</label>
                     <input type="number" id="distanceX" value="30" step="0.001">
                 </div>
-                
-                <div class="input-group">
-                    <label for="baseX">基准点 X 坐标:</label>
-                    <input type="number" id="baseX" value="0" step="0.001">
-                </div>
-                
-                <div class="input-group">
-                    <label for="baseY">基准点 Y 坐标:</label>
-                    <input type="number" id="baseY" value="0" step="0.001">
-                </div>
-                
-                <div class="input-group">
-                    <label for="angle">角度 (度):</label>
-                    <input type="number" id="angle" value="45" step="0.001">
-                </div>
             </div>
             
-            <div class="input-group">
-                <label for="calculationMethod">计算方法:</label>
-                <select id="calculationMethod">
-                    <option value="all">全部计算</option>
-                    <option value="coord">坐标计算法</option>
-                    <option value="ruler">直尺计算法</option>
-                    <option value="midArch">中拱计算法</option>
-                    <option value="shortArch">短拱计算法</option>
-                </select>
-            </div>
-            
-            <button id="calculate">计算</button>
+            <button id="calculate">计算拱高</button>
             
             <div class="result">
                 <h3>计算结果</h3>
@@ -269,10 +242,8 @@
             
             <div class="method-explanation">
                 <h4>方法说明</h4>
-                <p>这四种方法都基于圆弧几何计算，用于确定圆弧上特定点的坐标或高度：</p>
+                <p>此计算器基于圆弧几何计算，用于确定圆弧上特定点的拱高：</p>
                 <ul>
-                    <li><strong>坐标计算法</strong>：通过极坐标转换计算圆弧上特定点的直角坐标</li>
-                    <li><strong>直尺计算法</strong>：计算两点之间的距离和角度，用于确定圆弧上的位置关系</li>
                     <li><strong>中拱计算法</strong>：计算圆弧的中拱高度，即从弦中点到圆弧的垂直距离</li>
                     <li><strong>短拱计算法</strong>：计算圆弧的短拱高度，即从弦上某点到圆弧的垂直距离</li>
                 </ul>
@@ -294,10 +265,6 @@
         const radiusInput = document.getElementById('radius');
         const chordLengthInput = document.getElementById('chordLength');
         const distanceXInput = document.getElementById('distanceX');
-        const baseXInput = document.getElementById('baseX');
-        const baseYInput = document.getElementById('baseY');
-        const angleInput = document.getElementById('angle');
-        const calculationMethodSelect = document.getElementById('calculationMethod');
         const calculateButton = document.getElementById('calculate');
         const resultsElement = document.getElementById('results');
         const calculationDetailsElement = document.getElementById('calculationDetails');
@@ -317,143 +284,91 @@
             const A = parseFloat(radiusInput.value) || 0;
             const D = parseFloat(chordLengthInput.value) || 0;
             const X = parseFloat(distanceXInput.value) || 0;
-            const baseX = parseFloat(baseXInput.value) || 0;
-            const baseY = parseFloat(baseYInput.value) || 0;
-            const angle = parseFloat(angleInput.value) || 0;
-            const method = calculationMethodSelect.value;
+            
+            // 验证输入
+            if (A <= 0 || D <= 0) {
+                resultsElement.innerHTML = '<p style="color: #e74c3c;">请输入有效的半径和弦长（大于0）</p>';
+                return;
+            }
+            
+            if (D > 2 * A) {
+                resultsElement.innerHTML = '<p style="color: #e74c3c;">弦长不能大于直径（2×半径）</p>';
+                return;
+            }
             
             // 计算中间值
             const B = D / 2;
             const C = Math.sqrt(A*A - B*B);
             const H = A - C;
             
+            // 中拱计算法
+            const Y3 = Math.sqrt(A*A - X*X) - C;
+            
+            // 短拱计算法
+            const Y4 = Math.sqrt(A*A - Math.pow(B - X, 2));
+            const H2 = Y4 - C;
+            
             let resultsHTML = '';
             let detailsHTML = '';
             
-            // 根据选择的方法计算
-            if (method === 'all' || method === 'coord') {
-                // 坐标计算法
-                const rad = angle * Math.PI / 180;
-                const coordX = D * Math.cos(rad) + baseX;
-                const coordY = D * Math.sin(rad) + baseY;
-                
-                resultsHTML += `
-                    <div class="result-item">
-                        <span class="result-label">坐标计算法 - 目标点坐标:</span>
-                        <span class="result-value">(${coordX.toFixed(3)}, ${coordY.toFixed(3)})</span>
-                    </div>
-                `;
-                
-                detailsHTML += `
-                    <div class="formula">
-                        Prog 1: ? → A : ? → C : Lbl 1 : ? → B : ? → D : Rec (D, B) + A → X : Rec (D, B) + C → Y : Goto 1
-                    </div>
-                    <p><strong>坐标计算法:</strong></p>
-                    <p>基准点: (${baseX}, ${baseY})</p>
-                    <p>角度: ${angle}°</p>
-                    <p>距离: ${D}</p>
-                    <p>X = ${D} × cos(${angle}°) + ${baseX} = ${coordX.toFixed(3)}</p>
-                    <p>Y = ${D} × sin(${angle}°) + ${baseY} = ${coordY.toFixed(3)}</p>
-                    <hr>
-                `;
-            }
+            resultsHTML += `
+                <div class="result-item">
+                    <span class="result-label">半弦长 (B):</span>
+                    <span class="result-value">${B.toFixed(3)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">圆心到弦距离 (C):</span>
+                    <span class="result-value">${C.toFixed(3)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">中拱高 (H):</span>
+                    <span class="result-value">${H.toFixed(3)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">中拱计算法 - 拱高:</span>
+                    <span class="result-value">${Y3.toFixed(3)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">短拱计算法 - 短拱高:</span>
+                    <span class="result-value">${H2.toFixed(3)}</span>
+                </div>
+            `;
             
-            if (method === 'all' || method === 'ruler') {
-                // 直尺计算法
-                // 这里需要一些假设，因为原始公式中的参数含义不明确
-                const Y_val = 0; // 假设值
-                const X_val = 0; // 假设值
+            detailsHTML += `
+                <div class="formula">
+                    Prog 3: ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - X²) - C → Y : Goto 1
+                </div>
+                <p><strong>中拱计算法:</strong></p>
+                <p>半径 A = ${A}</p>
+                <p>弦长 D = ${D}</p>
+                <p>半弦长 B = ${D} ÷ 2 = ${B.toFixed(3)}</p>
+                <p>圆心到弦距离 C = √(${A}² - ${B.toFixed(3)}²) = ${C.toFixed(3)}</p>
+                <p>距离 X = ${X}</p>
+                <p>拱高 Y = √(${A}² - ${X}²) - ${C.toFixed(3)} = ${Y3.toFixed(3)}</p>
                 
-                const dx = C - A - Y_val;
-                const dy = C - X_val;
-                const D2 = Math.sqrt(dx*dx + dy*dy);
-                const B2 = angle + 180;
-                
-                resultsHTML += `
-                    <div class="result-item">
-                        <span class="result-label">直尺计算法 - 距离和角度:</span>
-                        <span class="result-value">距离: ${D2.toFixed(3)}, 角度: ${B2.toFixed(3)}°</span>
-                    </div>
-                `;
-                
-                detailsHTML += `
-                    <div class="formula">
-                        Prog 2: ? → A : ? → C : Lbl 1 : ? → Y : ? → X : Pol( C-A-Y , (C-X) ) → D : Y + 180 → B : Goto 1
-                    </div>
-                    <p><strong>直尺计算法:</strong></p>
-                    <p>参数A: ${A}, 参数C: ${C.toFixed(3)}</p>
-                    <p>参数Y: ${Y_val}, 参数X: ${X_val}</p>
-                    <p>dx = ${C.toFixed(3)} - ${A} - ${Y_val} = ${dx.toFixed(3)}</p>
-                    <p>dy = ${C.toFixed(3)} - ${X_val} = ${dy.toFixed(3)}</p>
-                    <p>距离 D = √(${dx.toFixed(3)}² + ${dy.toFixed(3)}²) = ${D2.toFixed(3)}</p>
-                    <p>角度 B = ${angle} + 180 = ${B2.toFixed(3)}°</p>
-                    <hr>
-                `;
-            }
-            
-            if (method === 'all' || method === 'midArch') {
-                // 中拱计算法
-                const Y3 = Math.sqrt(A*A - X*X) - C;
-                
-                resultsHTML += `
-                    <div class="result-item">
-                        <span class="result-label">中拱计算法 - 拱高:</span>
-                        <span class="result-value">${Y3.toFixed(3)}</span>
-                    </div>
-                `;
-                
-                detailsHTML += `
-                    <div class="formula">
-                        Prog 3: ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - X²) - C → Y : Goto 1
-                    </div>
-                    <p><strong>中拱计算法:</strong></p>
-                    <p>半径 A = ${A}</p>
-                    <p>弦长 D = ${D}</p>
-                    <p>半弦长 B = ${D} ÷ 2 = ${B.toFixed(3)}</p>
-                    <p>圆心到弦距离 C = √(${A}² - ${B.toFixed(3)}²) = ${C.toFixed(3)}</p>
-                    <p>距离 X = ${X}</p>
-                    <p>拱高 Y = √(${A}² - ${X}²) - ${C.toFixed(3)} = ${Y3.toFixed(3)}</p>
-                    <hr>
-                `;
-            }
-            
-            if (method === 'all' || method === 'shortArch') {
-                // 短拱计算法
-                const Y4 = Math.sqrt(A*A - Math.pow(B - X, 2));
-                const H2 = Y4 - C;
-                
-                resultsHTML += `
-                    <div class="result-item">
-                        <span class="result-label">短拱计算法 - 短拱高:</span>
-                        <span class="result-value">${H2.toFixed(3)}</span>
-                    </div>
-                `;
-                
-                detailsHTML += `
-                    <div class="formula">
-                        Prog 4: ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - (B - X)²) → Y : Y - C → H2 : Goto 1
-                    </div>
-                    <p><strong>短拱计算法:</strong></p>
-                    <p>半径 A = ${A}</p>
-                    <p>弦长 D = ${D}</p>
-                    <p>半弦长 B = ${D} ÷ 2 = ${B.toFixed(3)}</p>
-                    <p>圆心到弦距离 C = √(${A}² - ${B.toFixed(3)}²) = ${C.toFixed(3)}</p>
-                    <p>距离 X = ${X}</p>
-                    <p>Y = √(${A}² - (${B.toFixed(3)} - ${X})²) = ${Y4.toFixed(3)}</p>
-                    <p>短拱高 H2 = ${Y4.toFixed(3)} - ${C.toFixed(3)} = ${H2.toFixed(3)}</p>
-                `;
-            }
+                <div class="formula" style="margin-top: 20px;">
+                    Prog 4: ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - (B - X)²) → Y : Y - C → H2 : Goto 1
+                </div>
+                <p><strong>短拱计算法:</strong></p>
+                <p>半径 A = ${A}</p>
+                <p>弦长 D = ${D}</p>
+                <p>半弦长 B = ${D} ÷ 2 = ${B.toFixed(3)}</p>
+                <p>圆心到弦距离 C = √(${A}² - ${B.toFixed(3)}²) = ${C.toFixed(3)}</p>
+                <p>距离 X = ${X}</p>
+                <p>Y = √(${A}² - (${B.toFixed(3)} - ${X})²) = ${Y4.toFixed(3)}</p>
+                <p>短拱高 H2 = ${Y4.toFixed(3)} - ${C.toFixed(3)} = ${H2.toFixed(3)}</p>
+            `;
             
             // 更新结果
             resultsElement.innerHTML = resultsHTML;
             calculationDetailsElement.innerHTML = detailsHTML;
             
             // 绘制圆弧
-            drawArc(A, D, X, baseX, baseY, angle);
+            drawArc(A, D, X);
         }
         
         // 绘制圆弧函数
-        function drawArc(radius, chordLength, distanceX, baseX, baseY, angle) {
+        function drawArc(radius, chordLength, distanceX) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             // 计算中间值
@@ -514,6 +429,17 @@
             ctx.stroke();
             
             ctx.fillText(短拱高 = ${shortArchHeight.toFixed(2)}, centerX - halfChord + distanceX + 10, centerY - shortArchHeight/2);
+            
+            // 绘制中拱高
+            const midArchHeight = radius - centerToChord;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX, centerY - midArchHeight);
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillText(中拱高 = ${midArchHeight.toFixed(2)}, centerX + 10, centerY - midArchHeight/2);
         }
         
         // 绘制坐标系统
