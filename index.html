@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弧線與直線等分點關係計算器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .control-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+            cursor: crosshair;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .result {
+            background: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .result-value {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .instructions {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .point-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .point-box {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>弧線與直線等分點關係計算器</h1>
+            <p>在弧線上選擇兩個點，計算直線等分點與弧線的關係</p>
+        </header>
+        
+        <div class="instructions">
+            <h3>使用說明</h3>
+            <p>1. 在右側畫布上點擊選擇弧線上的兩個點</p>
+            <p>2. 設定等分數量</p>
+            <p>3. 點擊"計算關係"按鈕查看結果</p>
+            <p>4. 可以重新選擇點或調整參數後重新計算</p>
+        </div>
+        
+        <div class="content">
+            <div class="control-panel">
+                <h2>控制面板</h2>
+                
+                <div class="point-info">
+                    <div class="point-box">
+                        <div>點 A</div>
+                        <div id="pointA">未選擇</div>
+                    </div>
+                    <div class="point-box">
+                        <div>點 B</div>
+                        <div id="pointB">未選擇</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="divisions">等分數量:</label>
+                    <input type="number" id="divisions" value="5" min="2" max="20">
+                </div>
+                
+                <div class="input-group">
+                    <label for="arcRadius">弧線半徑:</label>
+                    <input type="number" id="arcRadius" value="150" min="50" max="300">
+                </div>
+                
+                <div class="input-group">
+                    <label for="arcStartAngle">弧線起始角度:</label>
+                    <input type="number" id="arcStartAngle" value="30" min="0" max="360">
+                </div>
+                
+                <div class="input-group">
+                    <label for="arcEndAngle">弧線結束角度:</label>
+                    <input type="number" id="arcEndAngle" value="150" min="0" max="360">
+                </div>
+                
+                <button id="calculate">計算關係</button>
+                <button id="reset">重置</button>
+                
+                <div class="result">
+                    <h3>計算結果</h3>
+                    <div id="results">
+                        <p>請先選擇兩個點並點擊"計算關係"</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="arcCanvas" width="500" height="500"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 獲取Canvas和上下文
+        const canvas = document.getElementById('arcCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 狀態變量
+        let points = [];
+        let arcRadius = 150;
+        let arcStartAngle = 30;
+        let arcEndAngle = 150;
+        let divisions = 5;
+        
+        // DOM元素
+        const pointAElement = document.getElementById('pointA');
+        const pointBElement = document.getElementById('pointB');
+        const divisionsInput = document.getElementById('divisions');
+        const arcRadiusInput = document.getElementById('arcRadius');
+        const arcStartAngleInput = document.getElementById('arcStartAngle');
+        const arcEndAngleInput = document.getElementById('arcEndAngle');
+        const calculateButton = document.getElementById('calculate');
+        const resetButton = document.getElementById('reset');
+        const resultsElement = document.getElementById('results');
+        
+        // 初始化
+        function init() {
+            // 繪製初始弧線
+            drawArc();
+            
+            // 事件監聽
+            canvas.addEventListener('click', handleCanvasClick);
+            divisionsInput.addEventListener('input', updateDivisions);
+            arcRadiusInput.addEventListener('input', updateArcRadius);
+            arcStartAngleInput.addEventListener('input', updateArcAngles);
+            arcEndAngleInput.addEventListener('input', updateArcAngles);
+            calculateButton.addEventListener('click', calculateRelationships);
+            resetButton.addEventListener('click', reset);
+        }
+        
+        // 繪製弧線
+        function drawArc() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 繪製坐標系
+            drawCoordinateSystem();
+            
+            // 繪製弧線
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, arcRadius, 
+                   degToRad(arcStartAngle), degToRad(arcEndAngle));
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 繪製已選擇的點
+            points.forEach((point, index) => {
+                drawPoint(point.x, point.y, index === 0 ? 'A' : 'B');
+            });
+            
+            // 如果已經有兩個點，繪製連接線和等分點
+            if (points.length === 2) {
+                drawLineAndDivisionPoints();
+            }
+        }
+        
+        // 繪製坐標系
+        function drawCoordinateSystem() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            
+            // 繪製網格
+            ctx.beginPath();
+            for (let x = 0; x <= canvas.width; x += 50) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+            }
+            for (let y = 0; y <= canvas.height; y += 50) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+            
+            // 繪製坐標軸
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, canvas.height);
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.stroke();
+            
+            // 標記原點
+            ctx.fillStyle = '#999';
+            ctx.fillText('O', centerX + 5, centerY - 5);
+        }
+        
+        // 繪製點
+        function drawPoint(x, y, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = label === 'A' ? '#e74c3c' : '#2ecc71';
+            ctx.fill();
+            
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.fillText(label, x + 10, y - 10);
+        }
+        
+        // 繪製連接線和等分點
+        function drawLineAndDivisionPoints() {
+            const pointA = points[0];
+            const pointB = points[1];
+            
+            // 繪製連接線
+            ctx.beginPath();
+            ctx.moveTo(pointA.x, pointA.y);
+            ctx.lineTo(pointB.x, pointB.y);
+            ctx.strokeStyle = '#e67e22';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 計算等分點
+            const divisionPoints = calculateDivisionPoints(pointA, pointB, divisions);
+            
+            // 繪製等分點
+            divisionPoints.forEach((point, index) => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#9b59b6';
+                ctx.fill();
+                
+                // 標記等分點
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.fillText(${index+1}, point.x + 8, point.y - 8);
+            });
+        }
+        
+        // 計算等分點
+        function calculateDivisionPoints(pointA, pointB, divisions) {
+            const points = [];
+            const dx = (pointB.x - pointA.x) / divisions;
+            const dy = (pointB.y - pointA.y) / divisions;
+            
+            for (let i = 1; i < divisions; i++) {
+                points.push({
+                    x: pointA.x + dx * i,
+                    y: pointA.y + dy * i
+                });
+            }
+            
+            return points;
+        }
+        
+        // 處理Canvas點擊事件
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // 檢查點是否在弧線上
+            if (isPointOnArc(x, y)) {
+                if (points.length < 2) {
+                    points.push({x, y});
+                    
+                    // 更新UI
+                    if (points.length === 1) {
+                        pointAElement.textContent = (${Math.round(x)}, ${Math.round(y)});
+                    } else {
+                        pointBElement.textContent = (${Math.round(x)}, ${Math.round(y)});
+                    }
+                    
+                    // 重新繪製
+                    drawArc();
+                }
+            }
+        }
+        
+        // 檢查點是否在弧線上
+        function isPointOnArc(x, y) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 計算點到圓心的距離
+            const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+            
+            // 檢查距離是否接近弧線半徑（允許一些誤差）
+            if (Math.abs(distance - arcRadius) > 5) {
+                return false;
+            }
+            
+            // 計算點的角度
+            let angle = Math.atan2(y - centerY, x - centerX);
+            if (angle < 0) angle += Math.PI * 2;
+            
+            // 檢查角度是否在弧線範圍內
+            const startRad = degToRad(arcStartAngle);
+            const endRad = degToRad(arcEndAngle);
+            
+            return angle >= startRad && angle <= endRad;
+        }
+        
+        // 計算關係
+        function calculateRelationships() {
+            if (points.length < 2) {
+                alert('請先選擇兩個點！');
+                return;
+            }
+            
+            const pointA = points[0];
+            const pointB = points[1];
+            const divisionPoints = calculateDivisionPoints(pointA, pointB, divisions);
+            
+            // 計算每個等分點到弧線的距離
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            let resultsHTML = '';
+            
+            divisionPoints.forEach((point, index) => {
+                // 計算點到圓心的距離
+                const distanceToCenter = Math.sqrt(
+                    Math.pow(point.x - centerX, 2) + 
+                    Math.pow(point.y - centerY, 2)
+                );
+                
+                // 計算到弧線的距離（半徑減去點到圓心的距離的絕對值）
+                const distanceToArc = Math.abs(distanceToCenter - arcRadius);
+                
+                resultsHTML += `
+                    <div class="result-item">
+                        <span>等分點 ${index+1}:</span>
+                        <span class="result-value">${distanceToArc.toFixed(2)} px</span>
+                    </div>
+                `;
+            });
+            
+            resultsElement.innerHTML = resultsHTML;
+        }
+        
+        // 更新等分數量
+        function updateDivisions() {
+            divisions = parseInt(divisionsInput.value);
+            if (points.length === 2) {
+                drawArc();
+            }
+        }
+        
+        // 更新弧線半徑
+        function updateArcRadius() {
+            arcRadius = parseInt(arcRadiusInput.value);
+            drawArc();
+        }
+        
+        // 更新弧線角度
+        function updateArcAngles() {
+            arcStartAngle = parseInt(arcStartAngleInput.value);
+            arcEndAngle = parseInt(arcEndAngleInput.value);
+            drawArc();
+        }
+        
+        // 重置
+        function reset() {
+            points = [];
+            pointAElement.textContent = '未選擇';
+            pointBElement.textContent = '未選擇';
+            resultsElement.innerHTML = '<p>請先選擇兩個點並點擊"計算關係"</p>';
+            drawArc();
+        }
+        
+        // 角度轉弧度
+        function degToRad(degrees) {
+            return degrees * Math.PI / 180;
+        }
+        
+        // 初始化應用
+        init();
+    </script>
+</body>
+</html>
