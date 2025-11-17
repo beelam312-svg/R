@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>弧線與直線等分點關係計算器</title>
+    <title>工程计算器</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,7 +15,7 @@
             font-family: 'Microsoft JhengHei', Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: #f5f7fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -29,44 +29,54 @@
             text-align: center;
             margin-bottom: 30px;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         h1 {
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 2.5em;
         }
         
-        .content {
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .calculator-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
         
-        .control-panel {
+        .calculator {
             background: white;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
         }
         
-        .canvas-container {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        .calculator:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
             display: flex;
-            justify-content: center;
             align-items: center;
         }
         
-        canvas {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: #f9f9f9;
-            cursor: crosshair;
+        h2 i {
+            margin-right: 10px;
+            color: #3498db;
         }
         
         .input-group {
@@ -75,444 +85,452 @@
         
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
             color: #2c3e50;
         }
         
-        input, select {
+        input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #ddd;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
+            transition: all 0.3s;
         }
         
-        input:focus, select:focus {
+        input:focus {
             outline: none;
             border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
         
         button {
-            background: #3498db;
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 15px 25px;
             font-size: 16px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             width: 100%;
             margin-top: 10px;
-            transition: background 0.3s;
+            font-weight: bold;
+            transition: all 0.3s;
         }
         
         button:hover {
-            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .result {
-            background: #e8f4fc;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
+            background: linear-gradient(135deg, #e8f4fc, #bbdefb);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            border-left: 5px solid #2196f3;
         }
         
         .result-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 8px;
+            margin-bottom: 15px;
+            padding: 12px;
             background: white;
-            border-radius: 4px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: #2c3e50;
         }
         
         .result-value {
             font-weight: bold;
             color: #e74c3c;
+            font-size: 1.1em;
         }
         
         @media (max-width: 768px) {
-            .content {
+            .calculator-container {
                 grid-template-columns: 1fr;
             }
         }
         
         .instructions {
             background: #fff9e6;
-            padding: 15px;
-            border-radius: 5px;
+            padding: 20px;
+            border-radius: 10px;
             margin-bottom: 20px;
             border-left: 4px solid #f39c12;
         }
         
-        .point-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
+        .program-code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            font-size: 0.9em;
+            line-height: 1.5;
+            overflow-x: auto;
         }
         
-        .point-box {
-            background: #f8f9fa;
+        .history {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             padding: 10px;
-            border-radius: 5px;
-            text-align: center;
+            background: #f9f9f9;
+        }
+        
+        .history-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>弧線與直線等分點關係計算器</h1>
-            <p>在弧線上選擇兩個點，計算直線等分點與弧線的關係</p>
+            <h1>工程计算器</h1>
+            <p class="subtitle">基于计算器程序的网页实现</p>
         </header>
         
         <div class="instructions">
-            <h3>使用說明</h3>
-            <p>1. 在右側畫布上點擊選擇弧線上的兩個點</p>
-            <p>2. 設定等分數量</p>
-            <p>3. 點擊"計算關係"按鈕查看結果</p>
-            <p>4. 可以重新選擇點或調整參數後重新計算</p>
+            <h3>使用说明</h3>
+            <p>选择不同的计算程序，输入相应参数，点击计算按钮获取结果。每个程序都有对应的原始代码显示。</p>
         </div>
         
-        <div class="content">
-            <div class="control-panel">
-                <h2>控制面板</h2>
+        <div class="calculator-container">
+            <!-- 程序1：坐标计算 -->
+            <div class="calculator">
+                <h2><i>📍</i> 程序1：坐标计算</h2>
                 
-                <div class="point-info">
-                    <div class="point-box">
-                        <div>點 A</div>
-                        <div id="pointA">未選擇</div>
-                    </div>
-                    <div class="point-box">
-                        <div>點 B</div>
-                        <div id="pointB">未選擇</div>
-                    </div>
+                <div class="program-code">
+                    Prog 1 : ? → A : ? → C : Lbl 1 : ? → B : ? → D : Rec (D, B) + A → X : Rec (D, B) + C → Y : Goto 1
                 </div>
                 
                 <div class="input-group">
-                    <label for="divisions">等分數量:</label>
-                    <input type="number" id="divisions" value="5" min="2" max="20">
+                    <label for="a1">基准点 X 坐标 (A):</label>
+                    <input type="number" id="a1" value="0" step="0.001">
                 </div>
                 
                 <div class="input-group">
-                    <label for="arcRadius">弧線半徑:</label>
-                    <input type="number" id="arcRadius" value="150" min="50" max="300">
+                    <label for="c1">基准点 Y 坐标 (C):</label>
+                    <input type="number" id="c1" value="0" step="0.001">
                 </div>
                 
                 <div class="input-group">
-                    <label for="arcStartAngle">弧線起始角度:</label>
-                    <input type="number" id="arcStartAngle" value="30" min="0" max="360">
+                    <label for="b1">角度 B (度):</label>
+                    <input type="number" id="b1" value="0" step="0.001">
                 </div>
                 
                 <div class="input-group">
-                    <label for="arcEndAngle">弧線結束角度:</label>
-                    <input type="number" id="arcEndAngle" value="150" min="0" max="360">
+                    <label for="d1">距离 D:</label>
+                    <input type="number" id="d1" value="0" step="0.001">
                 </div>
                 
-                <button id="calculate">計算關係</button>
-                <button id="reset">重置</button>
+                <button id="calculate1">计算坐标</button>
                 
                 <div class="result">
-                    <h3>計算結果</h3>
-                    <div id="results">
-                        <p>請先選擇兩個點並點擊"計算關係"</p>
+                    <h3>计算结果</h3>
+                    <div class="result-item">
+                        <span class="result-label">X 坐标:</span>
+                        <span id="resultX1" class="result-value">-</span>
                     </div>
+                    <div class="result-item">
+                        <span class="result-label">Y 坐标:</span>
+                        <span id="resultY1" class="result-value">-</span>
+                    </div>
+                </div>
+                
+                <div class="history" id="history1">
+                    <div class="history-item">历史记录将显示在这里</div>
                 </div>
             </div>
             
-            <div class="canvas-container">
-                <canvas id="arcCanvas" width="500" height="500"></canvas>
+            <!-- 程序2：直尺计算 -->
+            <div class="calculator">
+                <h2><i>📏</i> 程序2：直尺计算</h2>
+                
+                <div class="program-code">
+                    Prog 2 : ? → A : ? → C : Lbl 1 : ? → Y : ? → X : Pol( C-A-Y , (C-X) ) → D : Y + 180 → B : Goto 1
+                </div>
+                
+                <div class="input-group">
+                    <label for="a2">参数 A:</label>
+                    <input type="number" id="a2" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="c2">参数 C:</label>
+                    <input type="number" id="c2" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="y2">参数 Y:</label>
+                    <input type="number" id="y2" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="x2">参数 X:</label>
+                    <input type="number" id="x2" value="0" step="0.001">
+                </div>
+                
+                <button id="calculate2">直尺计算</button>
+                
+                <div class="result">
+                    <h3>计算结果</h3>
+                    <div class="result-item">
+                        <span class="result-label">距离 D:</span>
+                        <span id="resultD2" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">角度 B:</span>
+                        <span id="resultB2" class="result-value">-</span>
+                    </div>
+                </div>
+                
+                <div class="history" id="history2">
+                    <div class="history-item">历史记录将显示在这里</div>
+                </div>
+            </div>
+            
+            <!-- 程序3：中拱计算 -->
+            <div class="calculator">
+                <h2><i>🏗️</i> 程序3：中拱计算</h2>
+                
+                <div class="program-code">
+                    Prog 3 : ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - X²) - C → Y : Goto 1
+                </div>
+                
+                <div class="input-group">
+                    <label for="a3">半径 A:</label>
+                    <input type="number" id="a3" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="d3">弦长 D:</label>
+                    <input type="number" id="d3" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="x3">距离 X:</label>
+                    <input type="number" id="x3" value="0" step="0.001">
+                </div>
+                
+                <button id="calculate3">中拱计算</button>
+                
+                <div class="result">
+                    <h3>计算结果</h3>
+                    <div class="result-item">
+                        <span class="result-label">半弦长 B:</span>
+                        <span id="resultB3" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">圆心到弦距离 C:</span>
+                        <span id="resultC3" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">拱高 H:</span>
+                        <span id="resultH3" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">高度 Y:</span>
+                        <span id="resultY3" class="result-value">-</span>
+                    </div>
+                </div>
+                
+                <div class="history" id="history3">
+                    <div class="history-item">历史记录将显示在这里</div>
+                </div>
+            </div>
+            
+            <!-- 程序4：短拱计算 -->
+            <div class="calculator">
+                <h2><i>🏛️</i> 程序4：短拱计算</h2>
+                
+                <div class="program-code">
+                    Prog 4 : ? → A : ? → D : D ÷ 2 → B : √(A² - B²) → C : A - C → H : Lbl 1 : ? → X : √(A² - (B - X)²) → Y : Y - C → H2 : Goto 1
+                </div>
+                
+                <div class="input-group">
+                    <label for="a4">半径 A:</label>
+                    <input type="number" id="a4" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="d4">弦长 D:</label>
+                    <input type="number" id="d4" value="0" step="0.001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="x4">距离 X:</label>
+                    <input type="number" id="x4" value="0" step="0.001">
+                </div>
+                
+                <button id="calculate4">短拱计算</button>
+                
+                <div class="result">
+                    <h3>计算结果</h3>
+                    <div class="result-item">
+                        <span class="result-label">半弦长 B:</span>
+                        <span id="resultB4" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">圆心到弦距离 C:</span>
+                        <span id="resultC4" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">拱高 H:</span>
+                        <span id="resultH4" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">高度 Y:</span>
+                        <span id="resultY4" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">短拱高 H2:</span>
+                        <span id="resultH24" class="result-value">-</span>
+                    </div>
+                </div>
+                
+                <div class="history" id="history4">
+                    <div class="history-item">历史记录将显示在这里</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 獲取Canvas和上下文
-        const canvas = document.getElementById('arcCanvas');
-        const ctx = canvas.getContext('2d');
+        // 程序1：坐标计算
+        document.getElementById('calculate1').addEventListener('click', function() {
+            const A = parseFloat(document.getElementById('a1').value) || 0;
+            const C = parseFloat(document.getElementById('c1').value) || 0;
+            const B = parseFloat(document.getElementById('b1').value) || 0;
+            const D = parseFloat(document.getElementById('d1').value) || 0;
+            
+            // 将角度转换为弧度
+            const rad = B * Math.PI / 180;
+            
+            // 计算坐标
+            const X = D * Math.cos(rad) + A;
+            const Y = D * Math.sin(rad) + C;
+            
+            // 显示结果
+            document.getElementById('resultX1').textContent = X.toFixed(3);
+            document.getElementById('resultY1').textContent = Y.toFixed(3);
+            
+            // 添加到历史记录
+            addHistory('history1', A=${A}, C=${C}, B=${B}°, D=${D} → X=${X.toFixed(3)}, Y=${Y.toFixed(3)});
+        });
         
-        // 狀態變量
-        let points = [];
-        let arcRadius = 150;
-        let arcStartAngle = 30;
-        let arcEndAngle = 150;
-        let divisions = 5;
+        // 程序2：直尺计算
+        document.getElementById('calculate2').addEventListener('click', function() {
+            const A = parseFloat(document.getElementById('a2').value) || 0;
+            const C = parseFloat(document.getElementById('c2').value) || 0;
+            const Y = parseFloat(document.getElementById('y2').value) || 0;
+            const X = parseFloat(document.getElementById('x2').value) || 0;
+            
+            // 计算距离和角度
+            const dx = C - A - Y;
+            const dy = C - X;
+            const D = Math.sqrt(dx*dx + dy*dy);
+            let B = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            // 角度调整
+            B = Y + 180;
+            
+            // 显示结果
+            document.getElementById('resultD2').textContent = D.toFixed(3);
+            document.getElementById('resultB2').textContent = B.toFixed(3) + '°';
+            
+            // 添加到历史记录
+            addHistory('history2', A=${A}, C=${C}, Y=${Y}, X=${X} → D=${D.toFixed(3)}, B=${B.toFixed(3)}°);
+        });
         
-        // DOM元素
-        const pointAElement = document.getElementById('pointA');
-        const pointBElement = document.getElementById('pointB');
-        const divisionsInput = document.getElementById('divisions');
-        const arcRadiusInput = document.getElementById('arcRadius');
-        const arcStartAngleInput = document.getElementById('arcStartAngle');
-        const arcEndAngleInput = document.getElementById('arcEndAngle');
-        const calculateButton = document.getElementById('calculate');
-        const resetButton = document.getElementById('reset');
-        const resultsElement = document.getElementById('results');
+        // 程序3：中拱计算
+        document.getElementById('calculate3').addEventListener('click', function() {
+            const A = parseFloat(document.getElementById('a3').value) || 0;
+            const D = parseFloat(document.getElementById('d3').value) || 0;
+            const X = parseFloat(document.getElementById('x3').value) || 0;
+            
+            // 计算中间值
+            const B = D / 2;
+            const C = Math.sqrt(A*A - B*B);
+            const H = A - C;
+            const Y = Math.sqrt(A*A - X*X) - C;
+            
+            // 显示结果
+            document.getElementById('resultB3').textContent = B.toFixed(3);
+            document.getElementById('resultC3').textContent = C.toFixed(3);
+            document.getElementById('resultH3').textContent = H.toFixed(3);
+            document.getElementById('resultY3').textContent = Y.toFixed(3);
+            
+            // 添加到历史记录
+            addHistory('history3', A=${A}, D=${D}, X=${X} → B=${B.toFixed(3)}, C=${C.toFixed(3)}, H=${H.toFixed(3)}, Y=${Y.toFixed(3)});
+        });
         
-        // 初始化
-        function init() {
-            // 繪製初始弧線
-            drawArc();
+        // 程序4：短拱计算
+        document.getElementById('calculate4').addEventListener('click', function() {
+            const A = parseFloat(document.getElementById('a4').value) || 0;
+            const D = parseFloat(document.getElementById('d4').value) || 0;
+            const X = parseFloat(document.getElementById('x4').value) || 0;
             
-            // 事件監聽
-            canvas.addEventListener('click', handleCanvasClick);
-            divisionsInput.addEventListener('input', updateDivisions);
-            arcRadiusInput.addEventListener('input', updateArcRadius);
-            arcStartAngleInput.addEventListener('input', updateArcAngles);
-            arcEndAngleInput.addEventListener('input', updateArcAngles);
-            calculateButton.addEventListener('click', calculateRelationships);
-            resetButton.addEventListener('click', reset);
-        }
+            // 计算中间值
+            const B = D / 2;
+            const C = Math.sqrt(A*A - B*B);
+            const H = A - C;
+            const Y = Math.sqrt(A*A - Math.pow(B - X, 2));
+            const H2 = Y - C;
+            
+            // 显示结果
+            document.getElementById('resultB4').textContent = B.toFixed(3);
+            document.getElementById('resultC4').textContent = C.toFixed(3);
+            document.getElementById('resultH4').textContent = H.toFixed(3);
+            document.getElementById('resultY4').textContent = Y.toFixed(3);
+            document.getElementById('resultH24').textContent = H2.toFixed(3);
+            
+            // 添加到历史记录
+            addHistory('history4', A=${A}, D=${D}, X=${X} → B=${B.toFixed(3)}, C=${C.toFixed(3)}, H=${H.toFixed(3)}, Y=${Y.toFixed(3)}, H2=${H2.toFixed(3)});
+        });
         
-        // 繪製弧線
-        function drawArc() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 添加历史记录函数
+        function addHistory(historyId, text) {
+            const historyElement = document.getElementById(historyId);
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.textContent = text;
             
-            // 繪製坐標系
-            drawCoordinateSystem();
+            // 如果第一条是默认文本，则替换它
+            if (historyElement.firstChild.textContent === '历史记录将显示在这里') {
+                historyElement.innerHTML = '';
+            }
             
-            // 繪製弧線
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
+            historyElement.insertBefore(historyItem, historyElement.firstChild);
             
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, arcRadius, 
-                   degToRad(arcStartAngle), degToRad(arcEndAngle));
-            ctx.strokeStyle = '#3498db';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            
-            // 繪製已選擇的點
-            points.forEach((point, index) => {
-                drawPoint(point.x, point.y, index === 0 ? 'A' : 'B');
-            });
-            
-            // 如果已經有兩個點，繪製連接線和等分點
-            if (points.length === 2) {
-                drawLineAndDivisionPoints();
+            // 限制历史记录数量
+            if (historyElement.children.length > 5) {
+                historyElement.removeChild(historyElement.lastChild);
             }
         }
         
-        // 繪製坐標系
-        function drawCoordinateSystem() {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            ctx.strokeStyle = '#ddd';
-            ctx.lineWidth = 1;
-            
-            // 繪製網格
-            ctx.beginPath();
-            for (let x = 0; x <= canvas.width; x += 50) {
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-            }
-            for (let y = 0; y <= canvas.height; y += 50) {
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-            }
-            ctx.stroke();
-            
-            // 繪製坐標軸
-            ctx.strokeStyle = '#999';
-            ctx.lineWidth = 2;
-            
-            ctx.beginPath();
-            ctx.moveTo(centerX, 0);
-            ctx.lineTo(centerX, canvas.height);
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(canvas.width, centerY);
-            ctx.stroke();
-            
-            // 標記原點
-            ctx.fillStyle = '#999';
-            ctx.fillText('O', centerX + 5, centerY - 5);
-        }
-        
-        // 繪製點
-        function drawPoint(x, y, label) {
-            ctx.beginPath();
-            ctx.arc(x, y, 6, 0, Math.PI * 2);
-            ctx.fillStyle = label === 'A' ? '#e74c3c' : '#2ecc71';
-            ctx.fill();
-            
-            ctx.fillStyle = '#333';
-            ctx.font = '14px Arial';
-            ctx.fillText(label, x + 10, y - 10);
-        }
-        
-        // 繪製連接線和等分點
-        function drawLineAndDivisionPoints() {
-            const pointA = points[0];
-            const pointB = points[1];
-            
-            // 繪製連接線
-            ctx.beginPath();
-            ctx.moveTo(pointA.x, pointA.y);
-            ctx.lineTo(pointB.x, pointB.y);
-            ctx.strokeStyle = '#e67e22';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            // 計算等分點
-            const divisionPoints = calculateDivisionPoints(pointA, pointB, divisions);
-            
-            // 繪製等分點
-            divisionPoints.forEach((point, index) => {
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = '#9b59b6';
-                ctx.fill();
-                
-                // 標記等分點
-                ctx.fillStyle = '#333';
-                ctx.font = '12px Arial';
-                ctx.fillText(${index+1}, point.x + 8, point.y - 8);
-            });
-        }
-        
-        // 計算等分點
-        function calculateDivisionPoints(pointA, pointB, divisions) {
-            const points = [];
-            const dx = (pointB.x - pointA.x) / divisions;
-            const dy = (pointB.y - pointA.y) / divisions;
-            
-            for (let i = 1; i < divisions; i++) {
-                points.push({
-                    x: pointA.x + dx * i,
-                    y: pointA.y + dy * i
-                });
-            }
-            
-            return points;
-        }
-        
-        // 處理Canvas點擊事件
-        function handleCanvasClick(event) {
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            
-            // 檢查點是否在弧線上
-            if (isPointOnArc(x, y)) {
-                if (points.length < 2) {
-                    points.push({x, y});
-                    
-                    // 更新UI
-                    if (points.length === 1) {
-                        pointAElement.textContent = (${Math.round(x)}, ${Math.round(y)});
-                    } else {
-                        pointBElement.textContent = (${Math.round(x)}, ${Math.round(y)});
-                    }
-                    
-                    // 重新繪製
-                    drawArc();
-                }
-            }
-        }
-        
-        // 檢查點是否在弧線上
-        function isPointOnArc(x, y) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // 計算點到圓心的距離
-            const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-            
-            // 檢查距離是否接近弧線半徑（允許一些誤差）
-            if (Math.abs(distance - arcRadius) > 5) {
-                return false;
-            }
-            
-            // 計算點的角度
-            let angle = Math.atan2(y - centerY, x - centerX);
-            if (angle < 0) angle += Math.PI * 2;
-            
-            // 檢查角度是否在弧線範圍內
-            const startRad = degToRad(arcStartAngle);
-            const endRad = degToRad(arcEndAngle);
-            
-            return angle >= startRad && angle <= endRad;
-        }
-        
-        // 計算關係
-        function calculateRelationships() {
-            if (points.length < 2) {
-                alert('請先選擇兩個點！');
-                return;
-            }
-            
-            const pointA = points[0];
-            const pointB = points[1];
-            const divisionPoints = calculateDivisionPoints(pointA, pointB, divisions);
-            
-            // 計算每個等分點到弧線的距離
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            let resultsHTML = '';
-            
-            divisionPoints.forEach((point, index) => {
-                // 計算點到圓心的距離
-                const distanceToCenter = Math.sqrt(
-                    Math.pow(point.x - centerX, 2) + 
-                    Math.pow(point.y - centerY, 2)
-                );
-                
-                // 計算到弧線的距離（半徑減去點到圓心的距離的絕對值）
-                const distanceToArc = Math.abs(distanceToCenter - arcRadius);
-                
-                resultsHTML += `
-                    <div class="result-item">
-                        <span>等分點 ${index+1}:</span>
-                        <span class="result-value">${distanceToArc.toFixed(2)} px</span>
-                    </div>
-                `;
-            });
-            
-            resultsElement.innerHTML = resultsHTML;
-        }
-        
-        // 更新等分數量
-        function updateDivisions() {
-            divisions = parseInt(divisionsInput.value);
-            if (points.length === 2) {
-                drawArc();
-            }
-        }
-        
-        // 更新弧線半徑
-        function updateArcRadius() {
-            arcRadius = parseInt(arcRadiusInput.value);
-            drawArc();
-        }
-        
-        // 更新弧線角度
-        function updateArcAngles() {
-            arcStartAngle = parseInt(arcStartAngleInput.value);
-            arcEndAngle = parseInt(arcEndAngleInput.value);
-            drawArc();
-        }
-        
-        // 重置
-        function reset() {
-            points = [];
-            pointAElement.textContent = '未選擇';
-            pointBElement.textContent = '未選擇';
-            resultsElement.innerHTML = '<p>請先選擇兩個點並點擊"計算關係"</p>';
-            drawArc();
-        }
-        
-        // 角度轉弧度
-        function degToRad(degrees) {
-            return degrees * Math.PI / 180;
-        }
-        
-        // 初始化應用
-        init();
+        // 初始计算
+        document.getElementById('calculate1').click();
+        document.getElementById('calculate2').click();
+        document.getElementById('calculate3').click();
+        document.getElementById('calculate4').click();
     </script>
 </body>
 </html>
