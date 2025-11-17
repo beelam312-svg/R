@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>弧线垂直距离计算器</title>
+    <title>综合工程计算器</title>
     <style>
         * {
             box-sizing: border-box;
@@ -21,7 +21,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         
@@ -45,12 +45,42 @@
             font-size: 1.1em;
         }
         
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: #ecf0f1;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+        
         .calculator {
             background: white;
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            display: none;
+        }
+        
+        .calculator.active {
+            display: block;
         }
         
         .input-section {
@@ -174,22 +204,103 @@
             margin: 10px 0;
             overflow-x: auto;
         }
+        
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>弧线垂直距离计算器</h1>
-            <p class="subtitle">计算从A点沿AB直线移动X距离后到弧线的垂直距离</p>
+            <h1>综合工程计算器</h1>
+            <p class="subtitle">楼梯计算器与弧线垂直距离计算器</p>
         </header>
         
         <div class="instructions">
             <h3>使用说明</h3>
-            <p>输入圆弧半径、AB直线距离和从A点移动的距离X，计算该点到弧线的垂直距离。</p>
+            <p>选择您需要的计算器类型，输入相应参数，系统将自动计算结果。</p>
         </div>
         
-        <div class="calculator">
-            <h2>参数输入</h2>
+        <div class="tabs">
+            <div class="tab active" data-tab="stairs">楼梯计算器</div>
+            <div class="tab" data-tab="arc">弧线垂直距离计算器</div>
+        </div>
+        
+        <!-- 楼梯计算器 -->
+        <div class="calculator active" id="stairs-calculator">
+            <h2>楼梯计算器</h2>
+            
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="height">高 (mm):</label>
+                    <input type="number" id="height" value="150.0" step="0.1" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label for="width">闊 (mm):</label>
+                    <input type="number" id="width" value="250.0" step="0.1" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label for="bottom">梯底 (mm):</label>
+                    <input type="number" id="bottom" value="200.0" step="0.1" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label for="lower_platform">下梯台 (mm):</label>
+                    <input type="number" id="lower_platform" value="200.0" step="0.1" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label for="upper_platform">上梯台 (mm):</label>
+                    <input type="number" id="upper_platform" value="200.0" step="0.1" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label for="kickboard">踢腳 (mm):</label>
+                    <input type="number" id="kickboard" value="0.0" step="0.1" min="0">
+                </div>
+            </div>
+            
+            <button id="calculate-stairs">計算結果</button>
+            
+            <div class="error-message" id="stairs-error"></div>
+            
+            <div class="result">
+                <h3>計算結果</h3>
+                <div id="stairs-results">
+                    <div class="result-item">
+                        <span class="result-label">上斜:</span>
+                        <span id="up-slope" class="result-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">落斜:</span>
+                        <span id="down-slope" class="result-value">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="calculation-details">
+                <h4>計算公式</h4>
+                <div id="stairs-calculation-details">
+                    <div class="formula">
+                        上斜公式: 上斜 = (√(高² + 闊²) / 高 * 梯底) - (闊 / 高 * 下梯台) + 踢腳
+                    </div>
+                    <div class="formula">
+                        落斜公式: 落斜 = 上斜 + (下梯台 - 上梯台) * 闊 / 高 + 闊
+                    </div>
+                    <p>計算詳情將顯示在這裡</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 弧线垂直距离计算器 -->
+        <div class="calculator" id="arc-calculator">
+            <h2>弧线垂直距离计算器</h2>
             
             <div class="input-section">
                 <div class="input-group">
@@ -208,23 +319,26 @@
                 </div>
             </div>
             
-            <button id="calculate">计算垂直距离</button>
+            <button id="calculate-arc">计算垂直距离</button>
             
-            <div class="error-message" id="errorMessage"></div>
+            <div class="error-message" id="arc-error"></div>
             
             <div class="result">
                 <h3>计算结果</h3>
-                <div id="results">
+                <div id="arc-results">
                     <div class="result-item">
                         <span class="result-label">从A点移动X距离后到弧线的垂直距离:</span>
-                        <span id="verticalDistance" class="result-value">-</span>
+                        <span id="vertical-distance" class="result-value">-</span>
                     </div>
                 </div>
             </div>
             
             <div class="calculation-details">
                 <h4>计算详情</h4>
-                <div id="calculationDetails">
+                <div id="arc-calculation-details">
+                    <div class="formula">
+                        计算公式: 垂直距离 = √(R² - (B - X)²) - C
+                    </div>
                     <p>计算详情将显示在这里</p>
                 </div>
             </div>
@@ -232,57 +346,114 @@
     </div>
 
     <script>
-        // DOM元素
-        const radiusInput = document.getElementById('radius');
-        const chordLengthInput = document.getElementById('chordLength');
-        const distanceXInput = document.getElementById('distanceX');
-        const calculateButton = document.getElementById('calculate');
-        const errorMessage = document.getElementById('errorMessage');
-        const verticalDistanceElement = document.getElementById('verticalDistance');
-        const calculationDetailsElement = document.getElementById('calculationDetails');
+        // 选项卡切换功能
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有活动状态
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.calculator').forEach(c => c.classList.remove('active'));
+                
+                // 添加当前活动状态
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab + '-calculator').classList.add('active');
+            });
+        });
         
-        // 初始化
-        function init() {
-            // 事件监听
-            calculateButton.addEventListener('click', calculate);
-            
-            // 输入框变化时自动计算
-            radiusInput.addEventListener('input', calculate);
-            chordLengthInput.addEventListener('input', calculate);
-            distanceXInput.addEventListener('input', calculate);
-            
-            // 初始计算
-            calculate();
-        }
+        // 楼梯计算器功能
+        document.getElementById('calculate-stairs').addEventListener('click', calculateStairs);
         
-        // 计算函数
-        function calculate() {
+        // 弧线垂直距离计算器功能
+        document.getElementById('calculate-arc').addEventListener('click', calculateArc);
+        
+        // 输入框变化时自动计算
+        document.querySelectorAll('#stairs-calculator input').forEach(input => {
+            input.addEventListener('input', calculateStairs);
+        });
+        
+        document.querySelectorAll('#arc-calculator input').forEach(input => {
+            input.addEventListener('input', calculateArc);
+        });
+        
+        // 楼梯计算函数
+        function calculateStairs() {
             // 隐藏错误消息
-            errorMessage.style.display = 'none';
+            document.getElementById('stairs-error').style.display = 'none';
             
             // 获取输入值
-            const R = parseFloat(radiusInput.value);
-            const D = parseFloat(chordLengthInput.value);
-            const X = parseFloat(distanceXInput.value);
+            const height = parseFloat(document.getElementById('height').value) || 0;
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const bottom = parseFloat(document.getElementById('bottom').value) || 0;
+            const lowerPlatform = parseFloat(document.getElementById('lower_platform').value) || 0;
+            const upperPlatform = parseFloat(document.getElementById('upper_platform').value) || 0;
+            const kickboard = parseFloat(document.getElementById('kickboard').value) || 0;
+            
+            // 避免高度为0
+            if (height === 0) {
+                document.getElementById('stairs-error').textContent = '高度不能为0';
+                document.getElementById('stairs-error').style.display = 'block';
+                return;
+            }
+            
+            // 计算上斜
+            const triangle = Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2));
+            const upSlope = (triangle / height * bottom) - (width / height * lowerPlatform) + kickboard;
+            
+            // 计算落斜
+            const downSlope = upSlope + (lowerPlatform - upperPlatform) * width / height + width;
+            
+            // 显示结果
+            document.getElementById('up-slope').textContent = upSlope.toFixed(2) + ' mm';
+            document.getElementById('down-slope').textContent = downSlope.toFixed(2) + ' mm';
+            
+            // 更新计算详情
+            let detailsHTML = `
+                <p><strong>计算步骤:</strong></p>
+                <p>1. 三角形斜边 = √(高² + 闊²) = √(${height}² + ${width}²) = ${triangle.toFixed(3)}</p>
+                <p>2. 上斜 = (三角形斜边 / 高 * 梯底) - (闊 / 高 * 下梯台) + 踢腳</p>
+                <p>   = (${triangle.toFixed(3)} / ${height} * ${bottom}) - (${width} / ${height} * ${lowerPlatform}) + ${kickboard}</p>
+                <p>   = ${(triangle / height * bottom).toFixed(3)} - ${(width / height * lowerPlatform).toFixed(3)} + ${kickboard}</p>
+                <p>   = <strong>${upSlope.toFixed(3)}</strong></p>
+                <p>3. 落斜 = 上斜 + (下梯台 - 上梯台) * 闊 / 高 + 闊</p>
+                <p>   = ${upSlope.toFixed(3)} + (${lowerPlatform} - ${upperPlatform}) * ${width} / ${height} + ${width}</p>
+                <p>   = ${upSlope.toFixed(3)} + ${((lowerPlatform - upperPlatform) * width / height).toFixed(3)} + ${width}</p>
+                <p>   = <strong>${downSlope.toFixed(3)}</strong></p>
+            `;
+            
+            document.getElementById('stairs-calculation-details').innerHTML = detailsHTML;
+        }
+        
+        // 弧线垂直距离计算函数
+        function calculateArc() {
+            // 隐藏错误消息
+            document.getElementById('arc-error').style.display = 'none';
+            
+            // 获取输入值
+            const R = parseFloat(document.getElementById('radius').value);
+            const D = parseFloat(document.getElementById('chordLength').value);
+            const X = parseFloat(document.getElementById('distanceX').value);
             
             // 验证输入
             if (isNaN(R) || isNaN(D) || isNaN(X)) {
-                showError('请输入有效的数值');
+                document.getElementById('arc-error').textContent = '请输入有效的数值';
+                document.getElementById('arc-error').style.display = 'block';
                 return;
             }
             
             if (R <= 0) {
-                showError('半径必须大于0');
+                document.getElementById('arc-error').textContent = '半径必须大于0';
+                document.getElementById('arc-error').style.display = 'block';
                 return;
             }
             
             if (D <= 0) {
-                showError('AB直线距离必须大于0');
+                document.getElementById('arc-error').textContent = 'AB直线距离必须大于0';
+                document.getElementById('arc-error').style.display = 'block';
                 return;
             }
             
             if (X < 0) {
-                showError('距离X不能为负数');
+                document.getElementById('arc-error').textContent = '距离X不能为负数';
+                document.getElementById('arc-error').style.display = 'block';
                 return;
             }
             
@@ -291,12 +462,14 @@
             
             // 检查半径是否足够大
             if (B > R) {
-                showError('AB直线距离的一半不能大于半径');
+                document.getElementById('arc-error').textContent = 'AB直线距离的一半不能大于半径';
+                document.getElementById('arc-error').style.display = 'block';
                 return;
             }
             
             if (X > D) {
-                showError('距离X不能大于AB直线距离');
+                document.getElementById('arc-error').textContent = '距离X不能大于AB直线距离';
+                document.getElementById('arc-error').style.display = 'block';
                 return;
             }
             
@@ -304,17 +477,13 @@
             const C = Math.sqrt(R*R - B*B);
             
             // 计算从A点移动X距离后到弧线的垂直距离
-            // 使用短拱计算法
             const verticalDistance = Math.sqrt(R*R - Math.pow(B - X, 2)) - C;
             
             // 更新结果
-            verticalDistanceElement.textContent = verticalDistance.toFixed(3);
+            document.getElementById('vertical-distance').textContent = verticalDistance.toFixed(3);
             
             // 更新计算详情
             let detailsHTML = `
-                <div class="formula">
-                    计算公式: 垂直距离 = √(R² - (B - X)²) - C
-                </div>
                 <p><strong>计算步骤:</strong></p>
                 <p>1. 计算半弦长 B = D/2 = ${D}/2 = ${B.toFixed(3)}</p>
                 <p>2. 计算圆心到弦的距离 C = √(R² - B²) = √(${R}² - ${B.toFixed(3)}²) = ${C.toFixed(3)}</p>
@@ -326,22 +495,12 @@
                 <p>   = <strong>${verticalDistance.toFixed(3)}</strong></p>
             `;
             
-            calculationDetailsElement.innerHTML = detailsHTML;
+            document.getElementById('arc-calculation-details').innerHTML = detailsHTML;
         }
         
-        // 显示错误消息
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            
-            // 清除结果
-            verticalDistanceElement.textContent = '-';
-            
-            calculationDetailsElement.innerHTML = '<p>请输入有效参数</p>';
-        }
-        
-        // 初始化应用
-        init();
+        // 初始计算
+        calculateStairs();
+        calculateArc();
     </script>
 </body>
 </html>
