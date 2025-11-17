@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>综合工程计算器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -211,28 +212,32 @@
             padding-bottom: 10px;
             border-bottom: 2px solid #3498db;
         }
+        
+        .icon {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>综合工程计算器</h1>
+            <h1><i class="fas fa-calculator icon"></i>综合工程计算器</h1>
             <p class="subtitle">楼梯计算器与弧线垂直距离计算器</p>
         </header>
         
         <div class="instructions">
-            <h3>使用说明</h3>
+            <h3><i class="fas fa-info-circle icon"></i>使用说明</h3>
             <p>选择您需要的计算器类型，输入相应参数，系统将自动计算结果。</p>
         </div>
         
         <div class="tabs">
-            <div class="tab active" data-tab="stairs">楼梯计算器</div>
-            <div class="tab" data-tab="arc">弧线垂直距离计算器</div>
+            <div class="tab active" data-tab="stairs"><i class="fas fa-stairs icon"></i>楼梯计算器</div>
+            <div class="tab" data-tab="arc"><i class="fas fa-drafting-compass icon"></i>弧线垂直距离计算器</div>
         </div>
         
         <!-- 楼梯计算器 -->
         <div class="calculator active" id="stairs-calculator">
-            <h2>楼梯计算器</h2>
+            <h2><i class="fas fa-stairs icon"></i>楼梯计算器</h2>
             
             <div class="input-section">
                 <div class="input-group">
@@ -266,12 +271,12 @@
                 </div>
             </div>
             
-            <button id="calculate-stairs">計算結果</button>
+            <button id="calculate-stairs"><i class="fas fa-calculator icon"></i>計算結果</button>
             
             <div class="error-message" id="stairs-error"></div>
             
             <div class="result">
-                <h3>計算結果</h3>
+                <h3><i class="fas fa-chart-line icon"></i>計算結果</h3>
                 <div id="stairs-results">
                     <div class="result-item">
                         <span class="result-label">上斜:</span>
@@ -285,7 +290,7 @@
             </div>
             
             <div class="calculation-details">
-                <h4>計算公式</h4>
+                <h4><i class="fas fa-list-alt icon"></i>計算公式</h4>
                 <div id="stairs-calculation-details">
                     <div class="formula">
                         上斜公式: 上斜 = (√(高² + 闊²) / 高 * 梯底) - (闊 / 高 * 下梯台) + 踢腳
@@ -300,7 +305,7 @@
         
         <!-- 弧线垂直距离计算器 -->
         <div class="calculator" id="arc-calculator">
-            <h2>弧线垂直距离计算器</h2>
+            <h2><i class="fas fa-drafting-compass icon"></i>弧线垂直距离计算器</h2>
             
             <div class="input-section">
                 <div class="input-group">
@@ -319,12 +324,12 @@
                 </div>
             </div>
             
-            <button id="calculate-arc">计算垂直距离</button>
+            <button id="calculate-arc"><i class="fas fa-calculator icon"></i>计算垂直距离</button>
             
             <div class="error-message" id="arc-error"></div>
             
             <div class="result">
-                <h3>计算结果</h3>
+                <h3><i class="fas fa-chart-line icon"></i>计算结果</h3>
                 <div id="arc-results">
                     <div class="result-item">
                         <span class="result-label">从A点移动X距离后到弧线的垂直距离:</span>
@@ -334,7 +339,7 @@
             </div>
             
             <div class="calculation-details">
-                <h4>计算详情</h4>
+                <h4><i class="fas fa-list-alt icon"></i>计算详情</h4>
                 <div id="arc-calculation-details">
                     <div class="formula">
                         计算公式: 垂直距离 = √(R² - (B - X)²) - C
